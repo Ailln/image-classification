@@ -29,8 +29,15 @@ if device == "cuda":
 
 # Load checkpoint.
 print(">> Resuming from checkpoint...")
-checkpoint = torch.load(args.model_path, map_location="cpu")
-net.load_state_dict(checkpoint)
+state_dict = torch.load(args.model_path, map_location="cpu")
+
+from collections import OrderedDict
+new_state_dict = OrderedDict()
+for k, v in state_dict.items():
+    name = k[7:] # remove `module.`
+    new_state_dict[name] = v
+
+net.load_state_dict(new_state_dict)
 
 
 def test(img_path):

@@ -6,12 +6,12 @@ from app import test
 app = Flask(__name__)
 
 
-@app.route("/")
+@app.route("/api")
 def index():
-    return "Please use /image_classification."
+    return "Please use /api/image_classification."
 
 
-@app.route('/image_classification', methods=['GET', 'POST'])
+@app.route('/api/image_classification', methods=['GET', 'POST'])
 def text_classification():
     if request.method == 'POST':
         img = request.files.get('upload')
@@ -25,4 +25,4 @@ def text_classification():
 
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1', port=8008)
+    app.run(host='127.0.0.1', port=8000)
