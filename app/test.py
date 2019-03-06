@@ -29,7 +29,7 @@ if device == "cuda":
 
 # Load checkpoint.
 print(">> Resuming from checkpoint...")
-checkpoint = torch.load(args.model_path)
+checkpoint = torch.load(args.model_path, map_location="cpu")
 net.load_state_dict(checkpoint)
 
 
