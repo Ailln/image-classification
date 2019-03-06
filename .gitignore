@@ -102,3 +102,12 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# pycharm
+.idea/
+
+# my
+conf/my.yaml
+datas/class_to_idx.json
+save/*.jpg
+save/*.ckpt

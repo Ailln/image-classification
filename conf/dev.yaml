@@ -1,0 +1,10 @@
+dataset:
+  train: ./datas/dogs-vs-cats/train
+  validate: ./datas/dogs-vs-cats/validate
+  test: ./datas/dogs-vs-cats/test
+  class_to_idx: ./datas/class_to_idx.json
+
+parameters:
+  batch_size: 32
+  epoch_size: 20
+  learning_rate: 0.01
