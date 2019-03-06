@@ -29,6 +29,7 @@ if device == "cuda":
 
 # Load checkpoint.
 print(">> Resuming from checkpoint...")
+
 state_dict = torch.load(args.model_path, map_location="cpu")
 
 from collections import OrderedDict
