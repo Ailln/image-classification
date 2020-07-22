@@ -18,7 +18,7 @@ def text_classification():
         save_path = f"./save/{img.filename}"
         img.save(save_path)
         img_class = test.test(save_path)
-        print(f">> result: {img_class}")
+        print(f">> {save_path}: {img_class}")
         return img_class
     else:
         return "Please use POST method."

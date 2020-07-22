@@ -108,5 +108,4 @@ venv.bak/
 
 # my
 conf/my.yaml
-save/*.jpg
 save/*.ckpt

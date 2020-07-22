@@ -27,7 +27,7 @@ python -m app.test --model_path $your_best_model_path
 # 开启图片分类 API
 python -m app.api
 # 发送一张图片进行测试
-curl -F "upload=@/your/image/path/1.jpg; filename=1.jpg" http://127.0.0.1:8000/api/image_classification
+curl -F "upload=@save/1.jpg; filename=1.jpg" http://127.0.0.1:8000/api/image_classification
 ```
 
 ## 3 网络模型
@@ -36,6 +36,7 @@ curl -F "upload=@/your/image/path/1.jpg; filename=1.jpg" http://127.0.0.1:8000/a
 - [X] ResNet
 - [X] ShuffleNet
 - [x] MobileNet
+- [x] CRNN: 如果在 CNN 后面接 RNN 效果怎么样？
 
 ## 4 许可
 
