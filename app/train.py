@@ -3,15 +3,17 @@ import argparse
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.backends.cudnn as cudnn
 import torchvision
 import torchvision.transforms as transforms
+from torchvision.models import vgg11_bn
+from torchvision.models import resnet18
+from torchvision.models import mobilenet
+from torchvision.models import shufflenetv2
 
-from models import shuffle_net_v2
+from models import crnn
 from utils.conf_utils import get_conf
 from utils.other_utils import progress_bar
 from utils.data_utils import save_json
-
 
 parser = argparse.ArgumentParser(description="Image Classification Train")
 parser.add_argument("--conf", default="./conf/dev.yaml", type=str, help="conf path")
@@ -43,25 +45,30 @@ validate_loader = torch.utils.data.DataLoader(validate_set, batch_size=conf["par
 assert train_set.class_to_idx == validate_set.class_to_idx
 
 # Model
-print(">> Building model...")
-net = shuffle_net_v2.ShuffleNetV2(2)
-net = net.to(device)
-
-if device == "cuda":
-    net = torch.nn.DataParallel(net)
-    cudnn.benchmark = True
+model_name = conf["parameters"]["model_name"]
+print(f">> Building {model_name} model...")
+model_dict = {
+    "shufflenet": shufflenetv2.shufflenet_v2_x1_0(pretrained=True),
+    "mobilenet": mobilenet.mobilenet_v2(pretrained=True),
+    "vgg": vgg11_bn(pretrained=True),
+    "resnet": resnet18(pretrained=True),
+    "crnn": crnn.CRNN()
+}
+model = model_dict[model_name]
+model = model.to(device)
 
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=conf["parameters"]["learning_rate"], momentum=0.9, weight_decay=5e-4)
+optimizer = optim.SGD(model.parameters(), lr=conf["parameters"]["learning_rate"], momentum=0.9, weight_decay=5e-4)
 
 
 def train():
     best_train_acc = 0
     best_validate_acc = 0
-    for epoch in range(1, conf["parameters"]["epoch_size"]+1):
+    get_best_acc_num = 0
+    for epoch in range(1, conf["parameters"]["epoch_size"] + 1):
         print(f"\n>> Epoch: {epoch}")
         print("## train")
-        net.train()
+        model.train()
         train_loss = 0
         train_correct = 0
         train_total = 0
@@ -69,7 +76,7 @@ def train():
         for batch_idx, (inputs, targets) in enumerate(train_loader):
             inputs, targets = inputs.to(device), targets.to(device)
             optimizer.zero_grad()
-            outputs = net(inputs)
+            outputs = model(inputs)
             loss = criterion(outputs, targets)
             loss.backward()
             optimizer.step()
@@ -92,7 +99,7 @@ def train():
             for batch_idx, (inputs, targets) in enumerate(validate_loader):
                 inputs, targets = inputs.to(device), targets.to(device)
                 optimizer.zero_grad()
-                outputs = net(inputs)
+                outputs = model(inputs)
                 _, predicted = outputs.max(1)
                 validate_total += targets.size(0)
                 validate_correct += predicted.eq(targets).sum().item()
@@ -101,7 +108,10 @@ def train():
                 progress_bar(batch_idx, len(validate_loader), f"Acc: {validate_acc:.3f}")
 
         if train_acc > best_train_acc and validate_acc < best_validate_acc:
-            break
+            if get_best_acc_num == 2:
+                break
+            else:
+                get_best_acc_num += 1
         else:
             if train_acc > best_train_acc:
                 best_train_acc = train_acc
@@ -110,7 +120,8 @@ def train():
                 best_validate_acc = validate_acc
 
         if train_acc > 90 or validate_acc > 90:
-            torch.save(net.state_dict(), f"./save/epoch_{epoch}-train_acc_{train_acc}-validate_acc_{validate_acc}.ckpt")
+            torch.save(model.state_dict(),
+                       f"./save/{model_name}-epoch_{epoch}-train_acc_{train_acc}-validate_acc_{validate_acc}.ckpt")
 
 
 if __name__ == "__main__":

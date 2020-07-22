@@ -5,6 +5,7 @@ dataset:
   class_to_idx: ./datas/class_to_idx.json
 
 parameters:
-  batch_size: 32
+  model_name: mobilenet
+  batch_size: 64
   epoch_size: 20
   learning_rate: 0.01
