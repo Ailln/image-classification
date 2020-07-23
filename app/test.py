@@ -1,5 +1,4 @@
 import argparse
-from collections import OrderedDict
 
 import torch
 import torch.backends.cudnn as cudnn
