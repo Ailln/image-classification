@@ -17,6 +17,7 @@ from utils.data_utils import save_json
 
 parser = argparse.ArgumentParser(description="Image Classification Train")
 parser.add_argument("--conf", default="./conf/dev.yaml", type=str, help="conf path")
+parser.add_argument("--model", default="", type=str, help="model name")
 args = parser.parse_args()
 
 conf = get_conf(args.conf)
@@ -45,7 +46,7 @@ validate_loader = torch.utils.data.DataLoader(validate_set, batch_size=conf["par
 assert train_set.class_to_idx == validate_set.class_to_idx
 
 # Model
-model_name = conf["parameters"]["model_name"]
+model_name = args.model if args.model else conf["parameters"]["model_name"]
 print(f">> Building {model_name} model...")
 model_dict = {
     "shufflenet": shufflenetv2.shufflenet_v2_x1_0(pretrained=True),
@@ -119,7 +120,7 @@ def train():
             if validate_acc > best_validate_acc:
                 best_validate_acc = validate_acc
 
-        if train_acc > 90 or validate_acc > 90:
+        if train_acc > 90 and validate_acc > 90:
             torch.save(model.state_dict(),
                        f"./save/{model_name}-epoch_{epoch}-train_acc_{train_acc}-validate_acc_{validate_acc}.ckpt")
 

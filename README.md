@@ -6,6 +6,8 @@
 
 我们使用的是一个二分类的数据集【猫】和【狗】，你可以在 `Kaggle` 上下载到这个 [数据集](https://www.kaggle.com/c/dogs-vs-cats/) 。
 
+![](./datas/woof_meow.jpg)
+
 ## 2 快速上手
 
 ```bash
@@ -19,6 +21,9 @@ pip install -r requirements.txt
 # 根据上文中数据集链接下载数据，并将数据放入 /datas 下的对应文件夹中
 # 训练模型
 python -m app.train
+
+# 使用不同模型 [shufflenet, mobilenet, vgg, resnet, crnn]
+python -m app.train --model crnn
 
 # 在 /save 中找到训练效果最好的模型，记录模型路径
 # 开始测试
